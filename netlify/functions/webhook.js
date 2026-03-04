@@ -1,3 +1,5 @@
+const https = require("https");
+
 exports.handler = async function(event) {
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -6,29 +8,22 @@ exports.handler = async function(event) {
   };
   if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers, body: "" };
   if (event.httpMethod !== "POST") return { statusCode: 405, headers, body: "Method Not Allowed" };
-  try {
-    const response = await fetch("https://hook.us2.make.com/y7mcbpeo1js4jea36dlf84mvy6plp3hy", {
+  
+  return new Promise((resolve) => {
+    const data = event.body;
+    const options = {
+      hostname: "hook.us2.make.com",
+      path: "/y7mcbpeo1js4jea36dlf84mvy6plp3hy",
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: event.body
+      headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(data) }
+    };
+    const req = https.request(options, (res) => {
+      resolve({ statusCode: 200, headers, body: JSON.stringify({ ok: true }) });
     });
-    return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
-  } catch (err) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
-  }
+    req.on("error", (e) => {
+      resolve({ statusCode: 500, headers, body: JSON.stringify({ error: e.message }) });
+    });
+    req.write(data);
+    req.end();
+  });
 };
-```
-
-Haz clic en **Commit changes**.
-
----
-
-**Paso 2 — Actualiza el index.html en GitHub**
-
-En el archivo `index.html`, busca esta línea:
-```
-await fetch(WEBHOOK,
-```
-Y reemplázala por:
-```
-await fetch("/.netlify/functions/webhook",

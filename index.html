@@ -415,7 +415,7 @@ async function callAI(data){
   const usr=`Analiza estas respuestas y crea el ritual HESSAI personalizado.\n\nRESPUESTAS:\n${fmtAnswers()}\n\nSCORES: Armoni=${data.scores.armoni}, Vitali=${data.scores.vitali}, Serene=${data.scores.serene}\nRECOMENDADOS: ${recN}\n\nDevuelve exactamente:\n{"saludo":"2-3 lineas calidas y personales","interpretacion":"por que esta mezcla, 2-3 lineas","ritual":[{"producto":"nombre exacto","momento":"cuando exactamente","como":"como preparar en 1 linea","beneficio":"que podrias sentir sin promesas medicas"}],"semana":{"dias_1_2":"dias 1-2","dias_3_5":"dias 3-5","dias_6_7":"dias 6-7"},"cierre":"1-2 lineas motivacionales HESSAI"}`;
   let ai=null;
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:sys,messages:[{role:"user",content:usr}]})});
+    const r=await fetch("/.netlify/functions/claude",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:sys,messages:[{role:"user",content:usr}]})});
     const raw=await r.json();
     const txt=raw.content?.[0]?.text||"";
     ai=JSON.parse(txt.replace(/```json|```/g,"").trim());

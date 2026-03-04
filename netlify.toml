@@ -1,0 +1,10 @@
+[functions]
+  node_bundler = "esbuild"
+
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"

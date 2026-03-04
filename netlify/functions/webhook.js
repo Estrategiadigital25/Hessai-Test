@@ -13,7 +13,7 @@ exports.handler = async function(event) {
     const data = event.body;
     const options = {
       hostname: "hook.us2.make.com",
-      path: "/y7mcbpeo1js4jea36dlf84mvy6plp3hy",
+      path: "/vluun6nn983x8dykc2wddfui68dr",
       method: "POST",
       headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(data) }
     };

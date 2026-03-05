@@ -365,6 +365,8 @@ function submitCapture(){
   show('err-ciudad',!ciudad);if(!ciudad)ok=false;
   if(!ok)return;
   window._userData={nombre,email,whatsapp,ciudad};
+  window._answers={...answers};
+  window._QUESTIONS=QUESTIONS;
   goToScreen('s-loading');
   startLoading();
   const data=calcScores();
@@ -396,6 +398,19 @@ async function callAI(data){
   // WEBHOOK MAKE.COM — URL CORREGIDA (directa, sin Netlify)
   // ══════════════════════════════════════════════════════
   try{
+    // Build individual answer fields p1..p10
+    const qs=window._QUESTIONS||QUESTIONS;
+    const ans=window._answers||answers;
+    const pFields={};
+    qs.forEach((q,idx)=>{
+      const a=ans[q.id];
+      let label="";
+      if(a==null){label="";}
+      else if(q.type==="scale"){label=`${a}/5`;}
+      else if(q.type==="multi"){label=a.map(id=>q.options.find(o=>o.id===id)?.label||id).filter(Boolean).join(", ");}
+      else{label=q.options.find(o=>o.id===a)?.label||a||"";}
+      pFields[`p${idx+1}`]=label;
+    });
     await fetch("https://hook.us2.make.com/vluun6nn983x8dykc2wddfui68dmaorg",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -404,6 +419,7 @@ async function callAI(data){
         usuario:window._userData,
         productos_recomendados:recN,
         scores:data.scores,
+        ...pFields,
         respuestas:fmtAnswers()
       })
     });

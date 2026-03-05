@@ -424,7 +424,7 @@ async function callAI(data){
   }
   clearInterval(loadInterval);
   try{
-    await fetch("/.netlify/functions/webhook",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fecha:new Date().toISOString(),usuario:window._userData,productos_recomendados:recN,scores:data.scores,respuestas:fmtAnswers()})});
+    await fetch("https://hook.us2.make.com/vluun6nn983x8dykc2wddfui68dr",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fecha:new Date().toISOString(),usuario:window._userData,productos_recomendados:recN,scores:data.scores,respuestas:fmtAnswers()})});
   }catch{}
   renderResults(data,ai);
   goToScreen('s-results');

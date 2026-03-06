@@ -379,6 +379,97 @@ function startLoading(){
   loadInterval=setInterval(()=>{i=(i+1)%LMSGS.length;document.getElementById('loading-msg').textContent=LMSGS[i];},2200);
 }
 
+
+function buildEmailHTML(nombre,data,ai){
+  const PROD={
+    armoni:{name:"HESSAI Armoni",tagline:"Equilibrio · Ligereza · Digestión",color:"#CCDE91",tc:"#3d5a1a",flavor:"Limonada de Coco"},
+    vitali:{name:"HESSAI Vitali",tagline:"Energía · Enfoque · Vitalidad",color:"#9dd4d6",tc:"#1a5254",flavor:"Cacao"},
+    serene:{name:"HESSAI Serene",tagline:"Calma · Claridad · Descanso",color:"#f8c286",tc:"#7a4a10",flavor:"Matcha"},
+  };
+  const productos=data.recommended.map((k,i)=>{
+    const p=PROD[k],rd=ai.ritual?.[i]||{};
+    return `
+    <div style="background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:14px;border:2px solid ${p.color};">
+      <div style="font-family:Georgia,serif;font-size:22px;color:#1e1612;font-weight:400;margin-bottom:4px;">${p.name}</div>
+      <div style="font-size:11px;letter-spacing:2px;color:#9a8870;text-transform:uppercase;margin-bottom:14px;">${p.tagline}</div>
+      <table style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td style="width:50%;padding-right:12px;vertical-align:top;">
+            <div style="font-size:10px;letter-spacing:2px;color:#9a8870;text-transform:uppercase;margin-bottom:4px;">Cuándo</div>
+            <div style="font-size:13px;color:#1e1612;line-height:1.5;">${rd.momento||""}</div>
+          </td>
+          <td style="width:50%;vertical-align:top;">
+            <div style="font-size:10px;letter-spacing:2px;color:#9a8870;text-transform:uppercase;margin-bottom:4px;">Cómo</div>
+            <div style="font-size:13px;color:#1e1612;line-height:1.5;">${rd.como||""}</div>
+          </td>
+        </tr>
+      </table>
+      ${rd.beneficio?`<div style="margin-top:12px;padding:10px 14px;background:${p.color}55;border-radius:10px;font-family:Georgia,serif;font-size:14px;color:${p.tc};font-style:italic;line-height:1.5;">✦ ${rd.beneficio}</div>`:""}
+    </div>`;
+  }).join("");
+
+  const dias=ai.semana?`
+    <div style="background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:14px;border:1.5px solid #e8ddd0;">
+      <div style="font-size:10px;letter-spacing:4px;color:#9a8870;text-transform:uppercase;margin-bottom:16px;">Tu plan de 7 días</div>
+      <div style="border-left:3px solid #6EF3E6;padding-left:14px;margin-bottom:12px;">
+        <div style="font-size:11px;color:#9a8870;margin-bottom:4px;">Días 1–2 — <strong style="color:#1e1612;">Arranque suave</strong></div>
+        <div style="font-size:14px;color:#1e1612;line-height:1.65;">${ai.semana.dias_1_2}</div>
+      </div>
+      <div style="border-left:3px solid #C3F75B;padding-left:14px;margin-bottom:12px;">
+        <div style="font-size:11px;color:#9a8870;margin-bottom:4px;">Días 3–5 — <strong style="color:#1e1612;">Consolidando</strong></div>
+        <div style="font-size:14px;color:#1e1612;line-height:1.65;">${ai.semana.dias_3_5}</div>
+      </div>
+      <div style="border-left:3px solid #FFBD59;padding-left:14px;">
+        <div style="font-size:11px;color:#9a8870;margin-bottom:4px;">Días 6–7 — <strong style="color:#1e1612;">Sintiendo el ritual</strong></div>
+        <div style="font-size:14px;color:#1e1612;line-height:1.65;">${ai.semana.dias_6_7}</div>
+      </div>
+    </div>`:"";
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#faf7f2;font-family:'Arial Narrow',Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="font-size:10px;letter-spacing:8px;color:#9a8870;margin-bottom:8px;">HESSAI</div>
+      <div style="height:3px;background:linear-gradient(90deg,#C3F75B,#6EF3E6,#FFBD59,#FF6BBA,#C9A6FF);border-radius:100px;margin-bottom:20px;"></div>
+      <h1 style="font-family:Georgia,serif;font-size:32px;font-weight:400;color:#1e1612;line-height:1.2;margin:0 0 8px;">Tu ritual de bienestar<br/><em style="color:#5a8a1a;">está listo</em></h1>
+    </div>
+
+    <!-- Saludo -->
+    <div style="background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:14px;border:1.5px solid #e8ddd0;">
+      <div style="font-size:10px;letter-spacing:3px;color:#9a8870;text-transform:uppercase;margin-bottom:10px;">Para ti, ${nombre}</div>
+      <p style="font-family:Georgia,serif;font-size:17px;color:#5a4030;font-style:italic;line-height:1.85;margin:0;">"${ai.saludo}"</p>
+    </div>
+
+    <!-- Productos -->
+    <div style="font-size:10px;letter-spacing:4px;color:#9a8870;text-transform:uppercase;margin-bottom:12px;">Tu mezcla HESSAI</div>
+    ${productos}
+
+    <!-- Interpretacion -->
+    <div style="background:#fff;border-radius:16px;padding:20px 24px;margin-bottom:14px;border:1.5px solid #e8ddd0;">
+      <div style="font-size:10px;letter-spacing:3px;color:#9a8870;text-transform:uppercase;margin-bottom:10px;">Por qué esta mezcla</div>
+      <p style="font-family:Georgia,serif;font-size:16px;color:#5a4030;font-style:italic;line-height:1.85;margin:0;">${ai.interpretacion}</p>
+    </div>
+
+    <!-- Plan 7 dias -->
+    ${dias}
+
+    <!-- Cierre -->
+    <div style="background:linear-gradient(135deg,#1e1612 0%,#3a2a1e 100%);border-radius:16px;padding:28px 24px;text-align:center;margin-bottom:24px;">
+      <p style="font-family:Georgia,serif;font-size:18px;color:#fff;font-style:italic;line-height:1.8;margin:0 0 14px;">"${ai.cierre}"</p>
+      <div style="font-size:10px;letter-spacing:8px;color:#6EF3E6;">HESSAI</div>
+    </div>
+
+    <!-- Footer -->
+    <p style="font-size:10px;color:#c0b0a0;text-align:center;line-height:1.8;margin:0;">Las recomendaciones HESSAI no reemplazan el consejo médico profesional.<br/>Los efectos pueden variar.</p>
+  </div>
+</body>
+</html>`;
+}
+
 async function callAI(data){
   const recN=data.recommended.map(k=>PRODUCTS[k].full).join(', ');
   const sys=`Eres el experto en bienestar funcional de HESSAI, marca colombiana de rituales conscientes. Tono calido, cercano, empatico, experto. Espanol. NUNCA diagnosticos ni promesas medicas. Armoni (equilibrio digestivo, limonada de coco, manana/post comida — un sobre en 250ml de agua fria), Vitali (energia y enfoque, cacao, manana — un sobre en 250ml de agua caliente, bebida vegetal o cafe), Serene (calma y descanso, matcha, tarde/noche — un sobre en 250ml de agua caliente o bebida vegetal). Responde SOLO con JSON valido sin backticks.`;
@@ -420,7 +511,15 @@ async function callAI(data){
         productos_recomendados:recN,
         scores:data.scores,
         ...pFields,
-        respuestas:fmtAnswers()
+        respuestas:fmtAnswers(),
+        ai_saludo:ai.saludo||"",
+        ai_interpretacion:ai.interpretacion||"",
+        ai_ritual:ai.ritual?ai.ritual.map(r=>`${r.producto} · ${r.momento} · ${r.como} · ${r.beneficio}`).join(" | "):"",
+        ai_dias_1_2:ai.semana?.dias_1_2||"",
+        ai_dias_3_5:ai.semana?.dias_3_5||"",
+        ai_dias_6_7:ai.semana?.dias_6_7||"",
+        ai_cierre:ai.cierre||"",
+        email_html:buildEmailHTML(window._userData.nombre,data,ai)
       })
     });
   }catch(e){console.warn("Webhook error:",e);}

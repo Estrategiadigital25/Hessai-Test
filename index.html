@@ -562,7 +562,7 @@ async function callAI(data){
       else{label=q.options.find(o=>o.id===a)?.label||a||"";}
       pFields[`p${idx+1}`]=label;
     });
-    await fetch("https://n8n-production-27cd.up.railway.app/webhook/hessai",{
+    await fetch("/.netlify/functions/webhook",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
